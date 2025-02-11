@@ -11,7 +11,7 @@ public class Reservation {
     private Date checkOut;
 
     // Estático para que não seja instanciado um SDF para cada objeto Reservation que a aplicação tiver
-    public static SimpleDateFormat sdf = new SimpleDateFormat("dd/mm/yyyy");
+    public static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
     
     public Reservation(Integer roomNumber, Date checkIn, Date checkOut) {
         this.roomNumber = roomNumber;
@@ -37,12 +37,20 @@ public class Reservation {
 
     public long duration(){
         long diff = checkOut.getTime() - checkIn.getTime();
-        return TimeUnit.DAYS.convert(diff, TimeUnit.MICROSECONDS);
+        return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
     }
     
-    public void updateDates(Date checkIn, Date checkOut){
+    public String updateDates(Date checkIn, Date checkOut){
+        Date now = new Date();
+        if(checkIn.before(now) || checkOut.before(now)){
+            return "Reservation dates for update must be future dates";
+        }
+        if(!checkOut.after(checkIn)){
+            return "check-out date must be after check-in date";
+        }
         this.checkIn = checkIn;
         this.checkOut = checkOut;
+        return null;
     }
 
     @Override
@@ -55,6 +63,6 @@ public class Reservation {
                 + sdf.format(checkOut)
                 + ", "
                 + duration()
-                + "nigths";
+                + " nigths";
     }
 }
